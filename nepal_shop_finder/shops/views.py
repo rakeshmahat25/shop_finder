@@ -26,7 +26,15 @@ def search_view(request):
 def search_results_view(request):
     """Handle search form submission and display results"""
     if request.method == 'POST':
+        
         form = MobileShopSearchForm(request.POST)
+        if not form.is_valid():
+            # Print form errors to console for debugging
+            print("Form errors:", form.errors.as_json())
+            messages.error(request, f'Please correct the errors: {form.errors}')
+            return redirect('shops:search')
+        
+        
         if form.is_valid():
             # Get all parameters from the form's get_search_parameters method
             search_params = form.get_search_parameters()
