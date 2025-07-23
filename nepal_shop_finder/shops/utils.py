@@ -370,7 +370,7 @@ class MobileShopScraper:
             if details:
                 shop.update(details)
                 detailed_shops.append(shop)
-            time.sleep(0.5)  # Rate limiting
+            time.sleep(0.5)  
         
         # Sort by rating and user ratings
         detailed_shops.sort(key=lambda x: (x.get('rating', 0) or 0, x.get('user_ratings_total', 0)), reverse=True)
@@ -427,7 +427,9 @@ class MobileShopScraper:
             'radius': radius,
             'keyword': query,
             'type': 'electronics_store',
-            'key': self.api_key
+            'key': self.api_key,
+            'language': 'en',
+            'region': 'np' 
         }
         
         shops = []
