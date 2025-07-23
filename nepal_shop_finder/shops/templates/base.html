@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Location Data Explorer{% endblock %}</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        /* --- Color Palette & Theme from your Tailwind Design --- */
+        :root {
+            --primary-color: #51c088;  /* Tailwind blue-500 */
+            --primary-dark: #099837;  /* Tailwind blue-600 */
+            --primary-darker: #0a500b;/* Tailwind blue-700 */
+            --body-bg: #b9babb;       /* Tailwind gray-50 */
+            --footer-bg: #f3f4f6;     /* Tailwind gray-100 */
+            --text-dark: #1f2937;     /* Tailwind gray-800 */
+            --text-muted: #6b7280;    /* Tailwind gray-500 */
+            --text-light: #d1d5db;    /* Tailwind gray-300 */
+        }
+        
+        body {
+            background-color: var(--body-bg);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* --- Custom Header (inspired by Tailwind index.html) --- */
+        .navbar-custom {
+            background-color: var(--primary-dark);
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+        }
+
+        .navbar-custom .navbar-brand {
+            color: white !important;
+            font-weight: 700;
+            font-size: 1.25rem;
+        }
+
+        .navbar-custom .nav-link {
+            color: var(--text-light);
+            font-weight: 500;
+            border-bottom: 2px solid transparent;
+            padding-top: 0.5rem;
+            padding-bottom: 0.5rem;
+            margin: 0 0.5rem;
+        }
+
+        .navbar-custom .nav-link:hover {
+            color: white;
+            border-bottom-color: var(--text-light);
+        }
+        
+        .navbar-custom .nav-link.active {
+            color: white !important;
+            border-bottom-color: var(--primary-color);
+        }
+
+        .navbar-custom .account-btn {
+            background-color: var(--primary-darker);
+            color: white;
+            border: none;
+        }
+        .navbar-custom .account-btn:hover {
+            background-color: #1e40af; /* blue-800 */
+        }
+        .navbar-custom .dropdown-menu {
+            border-radius: 0.5rem;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+            border: 1px solid #e5e7eb;
+        }
+
+        /* --- Main Content Area --- */
+        .page-wrapper {
+            flex-grow: 1;
+            padding-top: 2rem;
+            padding-bottom: 2rem;
+        }
+        .content-container {
+            background: #ffffff;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1);
+        }
+        @media (min-width: 768px) {
+            .content-container {
+                padding: 2.5rem;
+            }
+        }
+
+        /* --- Custom Footer (inspired by Tailwind index.html) --- */
+        .footer-custom {
+            background-color: var(--footer-bg);
+            color: var(--text-muted);
+            padding: 2.5rem 0;
+            margin-top: 3rem;
+        }
+        .footer-custom .social-icon {
+            color: var(--text-muted);
+            transition: color 0.2s ease-in-out;
+            font-size: 1.25rem;
+        }
+        .footer-custom .social-icon:hover {
+            color: var(--primary-dark);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom">
+        <div class="container-xl">
+            <a class="navbar-brand d-flex align-items-center" href="{% url 'shops:search' %}">
+                <i class="fas fa-map-marked-alt fa-fw me-2"></i>
+                Location Data Explorer
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'search' %}active{% endif %}" href="{% url 'shops:search' %}">
+                            Search
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'history' %}active{% endif %}" href="{% url 'shops:history' %}">
+                            History
+                        </a>
+                    </li>
+                    <!-- Add more links here as you build pages like 'visualize' -->
+                </ul>
+                <div class="d-flex">
+                    <div class="dropdown">
+                        <button class="btn account-btn dropdown-toggle" type="button" id="accountDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-user-circle me-2"></i>Account
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="accountDropdown">
+                          <li><a class="dropdown-item" href="#">Profile</a></li>
+                          <li><a class="dropdown-item" href="#">Settings</a></li>
+                          <li><hr class="dropdown-divider"></li>
+                          <li><a class="dropdown-item" href="#">Logout</a></li>
+                        </ul>
+                      </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Wrapper -->
+    <main class="page-wrapper">
+        <div class="container-xl">
+            <!-- Django Messages -->
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <div class="content-container">
+                {% block content %}
+                <!-- Child template content will be injected here -->
+                {% endblock %}
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer-custom">
+        <div class="container-xl">
+            <div class="row align-items-center">
+                <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
+                    <p class="mb-0">
+                        © {% now "Y" %} Location Data Explorer. All rights reserved.
+                    </p>
+                </div>
+                <div class="col-md-6 text-center text-md-end">
+                    <a href="#" class="social-icon mx-2"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="social-icon mx-2"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="social-icon mx-2"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="social-icon mx-2"><i class="fab fa-github"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>
