@@ -145,8 +145,7 @@ class MobileShopSearchForm(forms.Form):
             'id': 'category-select'
         }),
         initial='mobile_shop',
-        label='📱 Shop Category',
-        help_text='Type of mobile-related shops to search for'
+        label='📱 Shop Category'
     )
     
     custom_location = forms.CharField(
@@ -156,8 +155,7 @@ class MobileShopSearchForm(forms.Form):
             'placeholder': 'Enter specific location (optional)',
             'id': 'custom-location'
         }),
-        label='🔍 Specific Location',
-        help_text='Add a more specific location within the city (optional)'
+        label='🔍 Specific Location'
     )
     
     SORT_BY_CHOICES = [
@@ -174,8 +172,7 @@ class MobileShopSearchForm(forms.Form):
             'id': 'location-select'
         }),
         initial='kathmandu',
-        label='📍 Select City',
-        help_text='Choose the city where you want to find mobile shops'
+        label='📍 Select City'
     )
     
     
@@ -186,8 +183,7 @@ class MobileShopSearchForm(forms.Form):
             'id': 'radius-select'
         }),
         initial=10000,
-        label='📏 Search Radius',
-        help_text='How far to search from the location'
+        label='📏 Search Radius'
     )
     
     max_results = forms.ChoiceField(
@@ -197,8 +193,7 @@ class MobileShopSearchForm(forms.Form):
             'id': 'max-results-select'
         }),
         initial=30,
-        label='📊 Maximum Results',
-        help_text='How many mobile shops to find'
+        label='📊 Maximum Results'
     )
     
     sort_by = forms.ChoiceField(
@@ -208,8 +203,7 @@ class MobileShopSearchForm(forms.Form):
             'id': 'sort-select'
         }),
         initial='rating',
-        label='🔄 Sort By',
-        help_text='How to sort the search results'
+        label='🔄 Sort By'
     )
     
     include_reviews = forms.BooleanField(
@@ -219,8 +213,7 @@ class MobileShopSearchForm(forms.Form):
             'class': 'form-check-input',
             'id': 'include-reviews'
         }),
-        label='📝 Include Customer Reviews',
-        help_text='Get detailed customer reviews for each shop'
+        label='📝 Include Customer Reviews'
     )
     
     only_open_now = forms.BooleanField(
@@ -230,8 +223,7 @@ class MobileShopSearchForm(forms.Form):
             'class': 'form-check-input',
             'id': 'only-open'
         }),
-        label='🕐 Only Currently Open Shops',
-        help_text='Show only shops that are open right now'
+        label='🕐 Only Currently Open Shops'
     )
     
     min_rating = forms.FloatField(
@@ -246,33 +238,50 @@ class MobileShopSearchForm(forms.Form):
             'placeholder': '0.0',
             'id': 'min-rating'
         }),
-        label='⭐ Minimum Rating',
-        help_text='Only show shops with rating above this value (0-5)'
+        label='⭐ Minimum Rating'
     )
     
     def clean(self):
         cleaned_data = super().clean()
-        location = cleaned_data.get('location')
+        
+        # Ensure required fields are present
+        required_fields = ['location', 'radius', 'max_results']
+        for field in required_fields:
+            if field not in cleaned_data:
+                self.add_error(field, 'This field is required')
+                return cleaned_data
+        
+        try:
+            location = cleaned_data.get('location')
+            location_dict = dict(self.NEPAL_CITIES)
+            cleaned_data['final_location'] = location_dict.get(location, location)
 
-        location_dict = dict(self.NEPAL_CITIES)
-        cleaned_data['final_location'] = location_dict.get(location, location)
-
-        cleaned_data['radius'] = int(cleaned_data.get('radius', 10000))
-        cleaned_data['max_results'] = int(cleaned_data.get('max_results', 30))
+            # Convert string values to integers safely
+            cleaned_data['radius'] = int(cleaned_data.get('radius', 10000))
+            cleaned_data['max_results'] = int(cleaned_data.get('max_results', 30))
+            
+        except (ValueError, TypeError) as e:
+            self.add_error(None, f'Invalid input: {str(e)}')
         
         return cleaned_data
     
     def get_search_parameters(self):
         """Return cleaned parameters ready for the MobileShopScraper"""
         if not self.is_valid():
+            print("Form is not valid in get_search_parameters")
             return None
-            
-        return {
-            'location': self.cleaned_data['final_location'],
-            'radius': self.cleaned_data['radius'],
-            'max_results': self.cleaned_data['max_results'],
-            'sort_by': self.cleaned_data['sort_by'],
-            'include_reviews': self.cleaned_data['include_reviews'],
-            'only_open_now': self.cleaned_data['only_open_now'],
-            'min_rating': self.cleaned_data.get('min_rating', 0.0),
-        }
+        
+        try:
+            return {
+                'location': self.cleaned_data.get('final_location', ''),
+                'radius': self.cleaned_data.get('radius', 10000),
+                'max_results': self.cleaned_data.get('max_results', 30),
+                'sort_by': self.cleaned_data.get('sort_by', 'rating'),
+                'include_reviews': self.cleaned_data.get('include_reviews', True),
+                'only_open_now': self.cleaned_data.get('only_open_now', False),
+                'min_rating': self.cleaned_data.get('min_rating', 0.0),
+                'category': self.cleaned_data.get('category', 'mobile_shop')
+            }
+        except KeyError as e:
+            print(f"Missing key in cleaned_data: {e}")
+            return None

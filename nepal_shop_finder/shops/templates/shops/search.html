@@ -4,28 +4,11 @@
 {% block title %}Search for Shops{% endblock %}
 
 {% block content %}
-
 <div class="row justify-content-center">
     <div class="col-lg-9 col-md-11">
         <div class="text-center mb-5">
             <h1 class="display-5 fw-bold">Find Local Shops in Nepal</h1>
-            <p class="lead text-muted">
-                {% if form.errors %}
-    <div class="alert alert-danger">
-        <strong>There were some errors:</strong>
-        <ul>
-            {% for field in form %}
-                {% for error in field.errors %}
-                    <li><strong>{{ field.label }}:</strong> {{ error }}</li>
-                {% endfor %}
-            {% endfor %}
-                        {% for error in form.non_field_errors %}
-                            <li>{{ error }}</li>
-                        {% endfor %}
-                    </ul>
-                </div>
-            {% endif %}
-            </p>
+            <p class="lead text-muted">Select a category and location to discover shops near you.</p>
         </div>
 
         <div class="card p-4 shadow-sm">
@@ -33,28 +16,8 @@
                 <form action="{% url 'shops:search_results' %}" method="POST">
                     {% csrf_token %}
                     
-
-                    <div class="mb-4">
-                        {{ form.category.label_tag }}
-                        {{ form.category }}
-                    </div>
-
-                    <div class="mb-4">
-                        {{ form.location.label_tag }}
-                        {{ form.location }}
-                    </div>
-
-                    
-                    <div class="mb-4">
-                        {{ form.radius.label_tag }}
-                        {{ form.radius }}
-                    </div>
-                    
-                    <div class="d-grid mt-5">
-                        <button type="submit" class="btn btn-primary btn-lg" style="background-color: var(--primary-dark); border-color: var(--primary-dark);">
-                            <i class="fas fa-search me-2"></i> Search Locations
-                        </button>
-                    </div>
+                        {{ form.as_p }}  <!-- This will render all fields -->
+                        <button type="submit">Search</button>
                 </form>
             </div>
         </div>

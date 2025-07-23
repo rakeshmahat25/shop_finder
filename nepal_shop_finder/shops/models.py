@@ -17,6 +17,7 @@ class SearchHistory(models.Model):
 
 class Shop(models.Model):
     search_history = models.ForeignKey(SearchHistory, on_delete=models.CASCADE, related_name='shops')
+    place_id = models.CharField(max_length=200, unique=True)
     name = models.CharField(max_length=200)
     phone = models.CharField(max_length=20, blank=True, null=True)
     address = models.TextField(blank=True, null=True)
