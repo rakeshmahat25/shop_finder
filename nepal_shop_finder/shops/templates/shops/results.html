@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+
+{% block title %}{{ search_history.category|title|replace_underscore }} in {{ search_history.location }} - Nepal Shop Finder{% endblock %}
+
+{% block content %}
+<!-- Header Section -->
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
+    <div>
+        <h2 class="mb-1">
+            <i class="fas fa-store text-primary"></i>
+            {{ search_history.category|replace_underscore|title }}
+
+        </h2>
+        <p class="text-muted mb-0">
+            <i class="fas fa-map-marker-alt"></i>
+            {{ search_history.location }} • {{ search_history.radius|floatformat:0 }}m radius
+        </p>
+    </div>
+    <div class="mt-2 mt-md-0">
+        <a href="{% url 'shops:visualize' search_history.id %}" class="btn btn-secondary me-2">
+            <i class="fas fa-chart-bar"></i> Visualize
+        </a>
+        <a href="{% url 'shops:search' %}" class="btn btn-primary">
+            <i class="fas fa-search"></i> New Search
+        </a>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row mb-4">
+    <div class="col-md-4 col-sm-6 mb-3">
+        <div class="stats-card">
+            <div class="icon"><i class="fas fa-store-alt"></i></div>
+            <h4 class="fw-bold">{{ stats.total_shops }}</h4>
+            <p class="text-muted mb-0">Total Shops Found</p>
+        </div>
+    </div>
+    <div class="col-md-4 col-sm-6 mb-3">
+        <div class="stats-card">
+            <div class="icon"><i class="fas fa-star" style="color: #f59e0b;"></i></div>
+            <h4 class="fw-bold">{{ stats.average_rating|floatformat:2|default:"N/A" }}</h4>
+            <p class="text-muted mb-0">Average Rating</p>
+        </div>
+    </div>
+    <div class="col-md-4 col-sm-12 mb-3">
+        <div class="stats-card">
+            <div class="icon"><i class="fas fa-door-open" style="color: #059669;"></i></div>
+            <h4 class="fw-bold">{{ stats.open_now_count }}</h4>
+            <p class="text-muted mb-0">Currently Open</p>
+        </div>
+    </div>
+</div>
+
+<!-- Shop Results List -->
+<h3 class="mb-3">Results</h3>
+<div class="list-group">
+    {% for shop in page_obj %}
+        <a href="{% url 'shops:shop_detail' shop.id %}" class="list-group-item list-group-item-action p-3 shop-card mb-3 rounded-3">
+            <div class="d-flex w-100 justify-content-between">
+                <h5 class="mb-1 fw-bold">{{ shop.name }}</h5>
+                <div>
+                    {% if shop.is_open %}
+                        <span class="badge bg-success">Open Now</span>
+                    {% else %}
+                        <span class="badge bg-danger">Closed</span>
+                    {% endif %}
+                </div>
+            </div>
+            <p class="mb-1 text-muted">{{ shop.address }}</p>
+            <div class="rating-stars">
+                {% if shop.rating %}
+                    <span class="fw-bold">{{ shop.rating }}</span>
+                    <i class="fas fa-star"></i>
+                    <small class="text-secondary">({{ shop.user_ratings_total }} ratings)</small>
+                {% else %}
+                    <small class="text-secondary">No rating available</small>
+                {% endif %}
+            </div>
+        </a>
+    {% empty %}
+        <div class="alert alert-warning text-center">
+            <h4 class="alert-heading">No Shops Found</h4>
+            <p>We couldn't find any shops matching your criteria. Please try a different location or a broader search radius.</p>
+        </div>
+    {% endfor %}
+</div>
+
+<!-- Pagination -->
+{% if page_obj.has_other_pages %}
+<nav aria-label="Page navigation" class="mt-4">
+    <ul class="pagination justify-content-center">
+        {% if page_obj.has_previous %}
+            <li class="page-item"><a class="page-link" href="?page=1">« First</a></li>
+            <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a></li>
+        {% endif %}
+        
+        <li class="page-item active" aria-current="page">
+            <span class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+        </li>
+
+        {% if page_obj.has_next %}
+            <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a></li>
+            <li class="page-item"><a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Last »</a></li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+
+{% endblock %}

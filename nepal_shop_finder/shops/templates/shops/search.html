@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+
+{% block title %}Search for Shops{% endblock %}
+
+{% block content %}
+
+<div class="row justify-content-center">
+    <div class="col-lg-9 col-md-11">
+        <div class="text-center mb-5">
+            <h1 class="display-5 fw-bold">Find Local Shops in Nepal</h1>
+            <p class="lead text-muted">
+                {% if form.errors %}
+    <div class="alert alert-danger">
+        <strong>There were some errors:</strong>
+        <ul>
+            {% for field in form %}
+                {% for error in field.errors %}
+                    <li><strong>{{ field.label }}:</strong> {{ error }}</li>
+                {% endfor %}
+            {% endfor %}
+                        {% for error in form.non_field_errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+            </p>
+        </div>
+
+        <div class="card p-4 shadow-sm">
+            <div class="card-body">
+                <form action="{% url 'shops:search_results' %}" method="POST">
+                    {% csrf_token %}
+                    
+
+                    <div class="mb-4">
+                        {{ form.category.label_tag }}
+                        {{ form.category }}
+                    </div>
+
+                    <div class="mb-4">
+                        {{ form.location.label_tag }}
+                        {{ form.location }}
+                    </div>
+
+                    
+                    <div class="mb-4">
+                        {{ form.radius.label_tag }}
+                        {{ form.radius }}
+                    </div>
+                    
+                    <div class="d-grid mt-5">
+                        <button type="submit" class="btn btn-primary btn-lg" style="background-color: var(--primary-dark); border-color: var(--primary-dark);">
+                            <i class="fas fa-search me-2"></i> Search Locations
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        {% if recent_searches %}
+        <div class="mt-5">
+            <h3 class="text-center mb-3">Recent Searches</h3>
+            <div class="list-group">
+                {% for search in recent_searches %}
+                    <a href="{% url 'shops:results' search.id %}" class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">{{ history_item.category|replace_underscore|title }} in {{ search.location }}</h5>
+                            <small>{{ search.created_at|timesince }} ago</small>
+                        </div>
+                        <p class="mb-1 text-muted">{{ search.results_count }} results found</p>
+                    </a>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+    </div>
+</div>
+{% endblock %}

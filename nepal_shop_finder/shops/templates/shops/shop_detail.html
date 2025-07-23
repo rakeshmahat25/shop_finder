@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ shop.name }} - Shop Details{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- Main Details Column -->
+    <div class="col-lg-8">
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-start mb-3">
+            <div>
+                <h1 class="fw-bold">{{ shop.name }}</h1>
+                <p class="text-muted fs-5"><i class="fas fa-map-marker-alt me-2"></i>{{ shop.address }}</p>
+            </div>
+            {% if shop.is_open %}
+                <span class="badge bg-success p-2 fs-6">Open Now</span>
+            {% else %}
+                <span class="badge bg-danger p-2 fs-6">Closed</span>
+            {% endif %}
+        </div>
+        
+        <!-- Details List -->
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <span><i class="fas fa-star me-2 rating-stars"></i>Rating</span>
+                {% if shop.rating %}
+                    <span class="fw-bold">{{ shop.rating }} / 5 (from {{ shop.user_ratings_total }} reviews)</span>
+                {% else %}
+                    <span class="text-muted">Not yet rated</span>
+                {% endif %}
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <span><i class="fas fa-phone me-2 text-primary"></i>Phone Number</span>
+                <span class="fw-bold">{{ shop.phone_number|default:"Not available" }}</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <span><i class="fas fa-globe me-2 text-primary"></i>Website</span>
+                {% if shop.website %}
+                    <a href="{{ shop.website }}" target="_blank" class="fw-bold">{{ shop.website }}</a>
+                {% else %}
+                    <span class="text-muted">Not available</span>
+                {% endif %}
+            </li>
+        </ul>
+
+        <!-- Back Button -->
+        <div class="mt-4">
+            <a href="{{ request.META.HTTP_REFERER|default_if_none:request.session.last_results_url|default_if_none:search_history.get_absolute_url }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Back to Results
+            </a>
+        </div>
+    </div>
+
+    <!-- Map Column -->
+    <div class="col-lg-4 mt-4 mt-lg-0">
+        <div class="card">
+            <div class="card-header fw-bold">Location Map</div>
+            <div class="card-body p-0">
+                <!-- You would embed a Google Map here -->
+                <div id="map" style="height: 300px; background-color: #e9ecef;" class="d-flex align-items-center justify-content-center text-muted">
+                    <p>Map Placeholder</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Add Google Maps API script here if you implement a live map -->
+<!-- <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap" async defer></script> -->
+<script>
+    // function initMap() {
+    //   const location = { lat: {{ shop.lat }}, lng: {{ shop.lng }} };
+    //   const map = new google.maps.Map(document.getElementById("map"), {
+    //     zoom: 15,
+    //     center: location,
+    //   });
+    //   const marker = new google.maps.Marker({
+    //     position: location,
+    //     map: map,
+    //   });
+    // }
+</script>
+{% endblock %}
