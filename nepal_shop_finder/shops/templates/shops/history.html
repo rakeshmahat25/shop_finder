@@ -29,6 +29,13 @@
             <a href="{% url 'shops:visualize' history_item.id %}" class="btn btn-outline-secondary btn-sm">
                 <i class="fas fa-chart-bar"></i> Visualize
             </a>
+            <form action="{% url 'shops:delete_search' history_item.id %}" method="post" class="d-inline">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-outline-danger btn-sm">
+                    <i class="fas fa-trash"></i> Delete
+                </button>
+            </form>
+
         </div>
     </div>
     {% endfor %}
