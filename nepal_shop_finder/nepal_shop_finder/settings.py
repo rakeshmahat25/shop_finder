@@ -14,7 +14,15 @@ SECRET_KEY = 'django-insecure-@!#&*^%$#@!%&*()_+'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+LOGIN_REDIRECT_URL = 'shops:search'
+
+LOGIN_URL = 'shops:login'
+
+LOGOUT_REDIRECT_URL = 'shops:search'
+
+MIDDLEWARE = [
+    'yourapp.middleware.redirect_middleware.RedirectUnauthenticatedMiddleware',
+]
 
 # Application definition
 INSTALLED_APPS = [
@@ -25,6 +33,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'shops',
+
 ]
 
 MIDDLEWARE = [
@@ -90,7 +99,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
-    BASE_DIR / "static",
+    os.path.join(BASE_DIR, 'static'),
 ]
 
 # Default primary key field type
