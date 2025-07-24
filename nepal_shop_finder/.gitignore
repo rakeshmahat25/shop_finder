@@ -9,6 +9,12 @@ __pycache__/
 local_settings.py
 
 db.sqlite3-journal
+# Database
+*.sqlite3
+ ../venv/
+db.sqlite3
+*.sqlite
+*.db
 media
 
 # If your build process includes running collectstatic, then you probably don't need or want to include staticfiles/
