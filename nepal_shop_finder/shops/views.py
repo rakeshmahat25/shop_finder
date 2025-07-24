@@ -260,3 +260,15 @@ def signup_view(request):
     return render(request, 'accounts/signup.html', {'form': form})
 
 
+import os
+from django.conf import settings
+from django.http import FileResponse, Http404
+
+def favicon_view(request):
+    # CHANGE THE PATH to look inside the 'favicon_io' folder
+    favicon_path = os.path.join(settings.BASE_DIR, 'favicon_io', 'favicon.ico')
+    
+    if os.path.exists(favicon_path):
+        return FileResponse(open(favicon_path, 'rb'))
+    else:
+        raise Http404("Favicon not found")
