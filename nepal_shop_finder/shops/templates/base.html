@@ -138,18 +138,40 @@
                     </li>
                     <!-- Add more links here as you build pages like 'visualize' -->
                 </ul>
+                <!-- In base.html -->
                 <div class="d-flex">
                     <div class="dropdown">
-                        <button class="btn account-btn dropdown-toggle" type="button" id="accountDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="fas fa-user-circle me-2"></i>Account
-                        </button>
-                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="accountDropdown">
-                          <li><a class="dropdown-item" href="#">Profile</a></li>
-                          <li><a class="dropdown-item" href="#">Settings</a></li>
-                          <li><hr class="dropdown-divider"></li>
-                          <li><a class="dropdown-item" href="#">Logout</a></li>
-                        </ul>
-                      </div>
+                        {% if user.is_authenticated %}
+                            <!-- If user IS logged in -->
+                            <button class="btn account-btn dropdown-toggle" type="button" id="accountDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-user-circle me-2"></i>
+                                Welcome, {{ user.username }}
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="accountDropdown">
+                            <li><a class="dropdown-item" href="#">Profile</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <!-- This form sends the required POST request for logout -->
+                                <form action="{% url 'shops:logout' %}" method="post" class="d-inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="dropdown-item" style="border: none; background: none; width: 100%; text-align: left; padding: 0.25rem 1rem;">
+                                        <i class="fas fa-sign-out-alt fa-fw me-2"></i>Logout
+                                    </button>
+                                </form>
+                            </li>
+                            </ul>
+                            {% else %}
+                            <!-- If user IS NOT logged in -->
+                            <button class="btn account-btn dropdown-toggle" type="button" id="accountDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-sign-in-alt me-2"></i>
+                                Account
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="accountDropdown">
+                            <li><a class="dropdown-item" href="{% url 'shops:login' %}">Login</a></li>
+                            <li><a class="dropdown-item" href="{% url 'shops:signup' %}">Sign Up</a></li>
+                            </ul>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
         </div>

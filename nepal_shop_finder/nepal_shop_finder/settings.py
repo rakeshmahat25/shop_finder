@@ -14,7 +14,15 @@ SECRET_KEY = 'django-insecure-@!#&*^%$#@!%&*()_+'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+LOGIN_REDIRECT_URL = 'shops:search'
+
+LOGIN_URL = 'shops:login'
+
+LOGOUT_REDIRECT_URL = 'shops:search'
+
+MIDDLEWARE = [
+    'yourapp.middleware.redirect_middleware.RedirectUnauthenticatedMiddleware',
+]
 
 # Application definition
 INSTALLED_APPS = [

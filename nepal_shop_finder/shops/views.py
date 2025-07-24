@@ -1,17 +1,15 @@
-from django.shortcuts import render
-
-# Create your views here.
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.http import JsonResponse
 from django.core.paginator import Paginator
 from django.db.models import Q, Avg
-from django.db import models
+from django.contrib.auth.decorators import login_required
 from .forms import ShopSearchForm, MobileShopSearchForm
 from .models import SearchHistory, Shop
 from .utils import NepalShopScraper, MobileShopScraper
 import json
 
+@login_required
 def search_view(request):
     """Main search page"""
     form = MobileShopSearchForm()
@@ -23,6 +21,7 @@ def search_view(request):
     }
     return render(request, 'shops/search.html', context)
 
+@login_required
 def search_results_view(request):
     """Handle search form submission and display results"""
     if request.method == 'POST':
@@ -33,7 +32,6 @@ def search_results_view(request):
             print("Form errors:", form.errors.as_json())
             messages.error(request, f'Please correct the errors: {form.errors}')
             return redirect('shops:search')
-        
         
         if form.is_valid():
             # Get all parameters from the form's get_search_parameters method
@@ -95,6 +93,7 @@ def search_results_view(request):
     
     return redirect('shops:search')
 
+@login_required
 def results_view(request, search_id):
     """Display search results"""
     search_history = get_object_or_404(SearchHistory, id=search_id)
@@ -155,6 +154,7 @@ def results_view(request, search_id):
     
     return render(request, 'shops/results.html', context)
 
+@login_required
 def visualize_view(request, search_id):
     """Display data visualizations"""
     search_history = get_object_or_404(SearchHistory, id=search_id)
@@ -193,6 +193,7 @@ def visualize_view(request, search_id):
     
     return render(request, 'shops/visualize.html', context)
 
+@login_required
 def search_history_view(request):
     """Display search history"""
     searches = SearchHistory.objects.all()
@@ -209,6 +210,7 @@ def search_history_view(request):
     
     return render(request, 'shops/history.html', context)
 
+@login_required
 def delete_search_view(request, search_id):
     """Delete a search history record"""
     if request.method == 'POST':
@@ -228,3 +230,33 @@ def shop_detail_view(request, shop_id):
     }
     
     return render(request, 'shops/shop_detail.html', context)
+
+from django.shortcuts import render, redirect
+from django.contrib.auth import login
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib import messages
+
+# You can keep your other views like search_view, history_view, etc.
+# ...
+
+# NEW Signup View (replaces your old 'signup' function)
+def signup_view(request):
+    if request.user.is_authenticated:
+        return redirect('shops:search') # Redirect logged-in users away
+
+    if request.method == 'POST':
+        # UserCreationForm handles validation and password hashing automatically
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()  # Create the user
+            login(request, user)  # Log them in immediately
+            messages.success(request, "Account created successfully! You are now logged in.")
+            return redirect('shops:search') # Redirect to the main search page
+    else:
+        form = UserCreationForm()
+    
+    # Note the corrected template path based on your project structure
+    return render(request, 'accounts/signup.html', {'form': form})
+
+# You no longer need user_login() or logout() functions here.
+# Django's auth_views handle them now.

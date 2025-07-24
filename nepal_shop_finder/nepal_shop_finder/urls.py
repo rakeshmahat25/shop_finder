@@ -8,5 +8,5 @@ def redirect_to_search(request):
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', redirect_to_search),
-    path('shops/', include('shops.urls')),
+    path('shops/', include('shops.urls')),   
 ]
