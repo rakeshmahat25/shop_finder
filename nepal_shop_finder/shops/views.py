@@ -9,12 +9,17 @@ from .models import SearchHistory, Shop
 from .utils import NepalShopScraper, MobileShopScraper
 import json
 
-@login_required
 def search_view(request):
-    """Main search page"""
+    """Main search page. Shows recent searches only to logged-in users."""
     form = MobileShopSearchForm()
-    recent_searches = SearchHistory.objects.all()[:10]
-    
+    recent_searches = [] 
+
+    # Check if the user making the request is logged in
+    if request.user.is_authenticated:
+        # If they are, fetch THEIR recent searches.
+        # Note: This assumes you link SearchHistory to a user. See "Best Practice" below.
+        recent_searches = SearchHistory.objects.filter(user=request.user).order_by('-created_at')[:5]
+
     context = {
         'form': form,
         'recent_searches': recent_searches,
@@ -236,10 +241,7 @@ from django.contrib.auth import login
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages
 
-# You can keep your other views like search_view, history_view, etc.
-# ...
 
-# NEW Signup View (replaces your old 'signup' function)
 def signup_view(request):
     if request.user.is_authenticated:
         return redirect('shops:search') # Redirect logged-in users away
@@ -255,8 +257,6 @@ def signup_view(request):
     else:
         form = UserCreationForm()
     
-    # Note the corrected template path based on your project structure
     return render(request, 'accounts/signup.html', {'form': form})
 
-# You no longer need user_login() or logout() functions here.
-# Django's auth_views handle them now.
+
