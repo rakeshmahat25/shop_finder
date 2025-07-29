@@ -21,6 +21,12 @@ LOGIN_URL = 'shops:login'
 LOGOUT_REDIRECT_URL = 'shops:search'
 
 
+import os
+
+SCRAPED_DATA_ROOT = os.path.join(BASE_DIR, 'shops', 'scraped_data')
+SCRAPED_DATA_URL = '/scraped_data/'
+
+
 # Application definition
 INSTALLED_APPS = [
     'django.contrib.admin',

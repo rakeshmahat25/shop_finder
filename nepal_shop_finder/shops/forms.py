@@ -126,16 +126,15 @@ class MobileShopSearchForm(forms.Form):
     
     MAX_RESULTS_CHOICES = [
         (10, '10 shops'),
-        (20, '20 shops'),
-        (30, '30 shops'),
         (50, '50 shops'),
         (75, '75 shops'),
         (100, '100 shops'),
+        (500, '500 shops'),
+        (1000, '1000 shops'),
     ]
     CATEGORY_CHOICES = [
-        ('mobile_shop', 'Mobile Shops'),
+        ('mobile_shop_and_accessories', 'Mobile Shops & Accessories'),
         ('phone_repair', 'Phone Repair'),
-        ('accessories', 'Mobile Accessories'),
     ]
     
     category = forms.ChoiceField(
@@ -144,7 +143,7 @@ class MobileShopSearchForm(forms.Form):
             'class': 'form-control form-control-lg',
             'id': 'category-select'
         }),
-        initial='mobile_shop',
+        initial='mobile_shop_and_accessories',
         label='📱 Shop Category'
     )
     
@@ -280,7 +279,7 @@ class MobileShopSearchForm(forms.Form):
                 'include_reviews': self.cleaned_data.get('include_reviews', True),
                 'only_open_now': self.cleaned_data.get('only_open_now', False),
                 'min_rating': self.cleaned_data.get('min_rating', 0.0),
-                'category': self.cleaned_data.get('category', 'mobile_shop')
+                'category': self.cleaned_data.get('category', 'mobile_shop_and_accessories')
             }
         except KeyError as e:
             print(f"Missing key in cleaned_data: {e}")
