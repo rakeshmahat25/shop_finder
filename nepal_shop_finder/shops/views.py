@@ -9,6 +9,10 @@ from .models import SearchHistory, Shop
 from .utils import NepalShopScraper, MobileShopScraper
 import json
 
+def index(request):
+    """Main landing page"""
+    return render(request, 'shops/index.html')
+
 def search_view(request):
     """Main search page. Shows recent searches only to logged-in users."""
     form = MobileShopSearchForm()
@@ -16,8 +20,7 @@ def search_view(request):
 
     # Check if the user making the request is logged in
     if request.user.is_authenticated:
-        # If they are, fetch THEIR recent searches.
-        # Note: This assumes you link SearchHistory to a user. See "Best Practice" below.
+
         recent_searches = SearchHistory.objects.filter(user=request.user).order_by('-created_at')[:5]
 
     context = {
@@ -225,6 +228,7 @@ def delete_search_view(request, search_id):
     
     return redirect('shops:history')
 
+@login_required
 def shop_detail_view(request, shop_id):
     """Display detailed shop information"""
     shop = get_object_or_404(Shop, id=shop_id)
@@ -258,7 +262,6 @@ def signup_view(request):
         form = UserCreationForm()
     
     return render(request, 'accounts/signup.html', {'form': form})
-
 
 import os
 from django.conf import settings

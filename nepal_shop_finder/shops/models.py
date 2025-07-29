@@ -1,7 +1,9 @@
 from django.db import models
 from django.utils import timezone
+from django.contrib.auth.models import User
 
 class SearchHistory(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, default="Unknown")  # Add this line
     location = models.CharField(max_length=100)
     category = models.CharField(max_length=50)
     radius = models.IntegerField()
@@ -54,3 +56,5 @@ class Shop(models.Model):
         if self.rating:
             return '★' * int(self.rating) + '☆' * (5 - int(self.rating))
         return 'No rating'
+    
+

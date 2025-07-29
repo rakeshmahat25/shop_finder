@@ -20,9 +20,6 @@ LOGIN_URL = 'shops:login'
 
 LOGOUT_REDIRECT_URL = 'shops:search'
 
-MIDDLEWARE = [
-    'yourapp.middleware.redirect_middleware.RedirectUnauthenticatedMiddleware',
-]
 
 # Application definition
 INSTALLED_APPS = [
@@ -43,7 +40,7 @@ MIDDLEWARE = [
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware'
 ]
 
 ROOT_URLCONF = 'nepal_shop_finder.urls'
