@@ -14,4 +14,6 @@ urlpatterns = [
     path('delete_search/<int:search_id>/', views.delete_search_view, name='delete_search'),
     path('shop/<int:shop_id>/', views.shop_detail_view, name='shop_detail'),
     path('clear-search-history/', views.clear_search_history, name='clear_search_history'),
+
+
 ]
