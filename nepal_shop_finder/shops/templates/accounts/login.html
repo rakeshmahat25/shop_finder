@@ -92,13 +92,26 @@
                         </div>
                     </div>
 
+                    {% comment %} 
+                    IMPORTANT: Make sure you have this line at the top of your template 
+                    (or at least before this code block) to make the 'provider_login_url' tag work.
+                    {% endcomment %}
+                    {% load socialaccount %}
+
                     <div class="mt-6 grid grid-cols-2 gap-3">
-                        <button type="button" class="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
-                            <i class="fab fa-google text-red-500 mr-2"></i> Google
-                        </button>
-                        <button type="button" class="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
-                            <i class="fab fa-github text-gray-800 mr-2"></i> GitHub
-                        </button>
+                        <!-- Google Login Button -->
+                        <a href="{% provider_login_url 'google' %}"
+                        class="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
+                            <i class="fab fa-google text-red-500 mr-2 self-center"></i>
+                            <span>Google</span>
+                        </a>
+
+                        <!-- GitHub Login Button -->
+                        <a href="{% provider_login_url 'github' %}"
+                        class="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
+                            <i class="fab fa-github text-gray-800 mr-2 self-center"></i>
+                            <span>GitHub</span>
+                        </a>
                     </div>
                 </div>
             </div>
