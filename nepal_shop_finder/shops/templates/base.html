@@ -1,9 +1,21 @@
+
 <!DOCTYPE html>
+{% load static %}
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Location Data Explorer{% endblock %}</title>
+    
+    <!-- =================================================================== -->
+    <!-- NEW: Comprehensive Favicon Links using the 'static' tag             -->
+    <!-- These paths assume your folder is at 'static/favicon_io/'           -->
+    <!-- =================================================================== -->
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'favicon_io/apple-touch-icon.png' %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'favicon_io/favicon-32x32.png' %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'favicon_io/favicon-16x16.png' %}">
+    <link rel="manifest" href="{% static 'favicon_io/site.webmanifest' %}">
+    <link rel="shortcut icon" href="{% static 'favicon_io/favicon.ico' %}">
     
     <!-- Bootstrap CSS -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
@@ -15,15 +27,16 @@
     <style>
         /* --- Color Palette & Theme from your Tailwind Design --- */
         :root {
-            --primary-color: #51c088;  /* Tailwind blue-500 */
-            --primary-dark: #099837;  /* Tailwind blue-600 */
-            --primary-darker: #0a500b;/* Tailwind blue-700 */
-            --body-bg: #b9babb;       /* Tailwind gray-50 */
-            --footer-bg: #f3f4f6;     /* Tailwind gray-100 */
-            --text-dark: #1f2937;     /* Tailwind gray-800 */
-            --text-muted: #6b7280;    /* Tailwind gray-500 */
-            --text-light: #d1d5db;    /* Tailwind gray-300 */
+            --primary-color: #3d9b63;     /* Green Start */
+            --primary-dark: #1e4d3b;      /* Green End */
+            --primary-darker: #163c2f;    /* Deeper Shade */
+            --body-bg: #f9fafb;           /* Light Gray Background */
+            --footer-bg: #f3f4f6;         /* Footer Light Gray */
+            --text-dark: #1f2937;         /* Dark Gray Text */
+            --text-muted: #6b7280;        /* Muted Gray */
+            --text-light: #e5e7eb;        /* Light Text for Navbar */
         }
+
         
         body {
             background-color: var(--body-bg);
@@ -35,9 +48,10 @@
         
         /* --- Custom Header (inspired by Tailwind index.html) --- */
         .navbar-custom {
-            background-color: var(--primary-dark);
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
             box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
         }
+
 
         .navbar-custom .navbar-brand {
             color: white !important;
@@ -70,8 +84,9 @@
             border: none;
         }
         .navbar-custom .account-btn:hover {
-            background-color: #1e40af; /* blue-800 */
+            background-color: var(--primary-dark);
         }
+
         .navbar-custom .dropdown-menu {
             border-radius: 0.5rem;
             box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
@@ -138,18 +153,40 @@
                     </li>
                     <!-- Add more links here as you build pages like 'visualize' -->
                 </ul>
+                <!-- In base.html -->
                 <div class="d-flex">
                     <div class="dropdown">
-                        <button class="btn account-btn dropdown-toggle" type="button" id="accountDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="fas fa-user-circle me-2"></i>Account
-                        </button>
-                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="accountDropdown">
-                          <li><a class="dropdown-item" href="#">Profile</a></li>
-                          <li><a class="dropdown-item" href="#">Settings</a></li>
-                          <li><hr class="dropdown-divider"></li>
-                          <li><a class="dropdown-item" href="#">Logout</a></li>
-                        </ul>
-                      </div>
+                        {% if user.is_authenticated %}
+                            <!-- If user IS logged in -->
+                            <button class="btn account-btn dropdown-toggle" type="button" id="accountDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-user-circle me-2"></i>
+                                Welcome, {{ user.username }}
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="accountDropdown">
+                            <li><a class="dropdown-item" href="#">Profile</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <!-- This form sends the required POST request for logout -->
+                                <form action="{% url 'shops:logout' %}" method="post" class="d-inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="dropdown-item" style="border: none; background: none; width: 100%; text-align: left; padding: 0.25rem 1rem;">
+                                        <i class="fas fa-sign-out-alt fa-fw me-2"></i>Logout
+                                    </button>
+                                </form>
+                            </li>
+                            </ul>
+                            {% else %}
+                            <!-- If user IS NOT logged in -->
+                            <button class="btn account-btn dropdown-toggle" type="button" id="accountDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-sign-in-alt me-2"></i>
+                                Account
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="accountDropdown">
+                            <li><a class="dropdown-item" href="{% url 'shops:login' %}">Login</a></li>
+                            <li><a class="dropdown-item" href="{% url 'shops:signup' %}">Sign Up</a></li>
+                            </ul>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
         </div>
@@ -170,7 +207,7 @@
 
             <div class="content-container">
                 {% block content %}
-                <!-- Child template content will be injected here -->
+                
                 {% endblock %}
             </div>
         </div>

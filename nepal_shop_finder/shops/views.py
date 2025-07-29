@@ -1,29 +1,36 @@
-from django.shortcuts import render
-
-# Create your views here.
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.db.models import Q, Avg
-from django.db import models
+from django.contrib.auth.decorators import login_required
 from .forms import ShopSearchForm, MobileShopSearchForm
 from .models import SearchHistory, Shop
 from .utils import NepalShopScraper, MobileShopScraper
 import json
 
+def index(request):
+    """Main landing page"""
+    return render(request, 'shops/index.html')
+
 def search_view(request):
-    """Main search page"""
+    """Main search page. Shows recent searches only to logged-in users."""
     form = MobileShopSearchForm()
-    recent_searches = SearchHistory.objects.all()[:10]
-    
+    recent_searches = [] 
+
+    # Check if the user making the request is logged in
+    if request.user.is_authenticated:
+
+        recent_searches = SearchHistory.objects.filter(user=request.user).order_by('-created_at')[:5]
+
     context = {
         'form': form,
         'recent_searches': recent_searches,
     }
     return render(request, 'shops/search.html', context)
 
+@login_required
 def search_results_view(request):
     """Handle search form submission and display results"""
     if request.method == 'POST':
@@ -35,7 +42,6 @@ def search_results_view(request):
             messages.error(request, f'Please correct the errors: {form.errors}')
             return redirect('shops:search')
         
-        
         if form.is_valid():
             # Get all parameters from the form's get_search_parameters method
             search_params = form.get_search_parameters()
@@ -46,18 +52,22 @@ def search_results_view(request):
             try:
                 # Initialize scraper and search
                 scraper = MobileShopScraper()
+
                 shops_data = scraper.search_mobile_shops(
                     location=search_params['location'],
                     radius=search_params['radius'],
                     max_results=search_params['max_results']
                 )
+                filename = scraper._save_to_csv(shops_data, search_params['location'])
                 
                 # Save search history
                 search_history = SearchHistory.objects.create(
+                    user=request.user,
                     location=search_params['location'],
                     category=form.cleaned_data['category'],
                     radius=search_params['radius'],
-                    results_count=len(shops_data)
+                    results_count=len(shops_data),
+                    csv_filename=filename  # save the file name here
                 )
                 print('debug: Search history created:', search_history)
                 # Save shops data
@@ -96,6 +106,7 @@ def search_results_view(request):
     
     return redirect('shops:search')
 
+@login_required
 def results_view(request, search_id):
     """Display search results"""
     search_history = get_object_or_404(SearchHistory, id=search_id)
@@ -156,6 +167,7 @@ def results_view(request, search_id):
     
     return render(request, 'shops/results.html', context)
 
+@login_required
 def visualize_view(request, search_id):
     """Display data visualizations"""
     search_history = get_object_or_404(SearchHistory, id=search_id)
@@ -194,6 +206,7 @@ def visualize_view(request, search_id):
     
     return render(request, 'shops/visualize.html', context)
 
+@login_required
 def search_history_view(request):
     """Display search history"""
     searches = SearchHistory.objects.all()
@@ -210,6 +223,7 @@ def search_history_view(request):
     
     return render(request, 'shops/history.html', context)
 
+@login_required
 def delete_search_view(request, search_id):
     """Delete a search history record"""
     if request.method == 'POST':
@@ -219,6 +233,7 @@ def delete_search_view(request, search_id):
     
     return redirect('shops:history')
 
+@login_required
 def shop_detail_view(request, shop_id):
     """Display detailed shop information"""
     shop = get_object_or_404(Shop, id=shop_id)
@@ -229,6 +244,7 @@ def shop_detail_view(request, shop_id):
     }
     
     return render(request, 'shops/shop_detail.html', context)
+
 @login_required
 def clear_search_history(request):
     if request.method == 'POST':
@@ -236,3 +252,40 @@ def clear_search_history(request):
         SearchHistory.objects.filter(user=request.user).delete()
         return redirect('shops:search_history')  # adjust to your URL name
     return redirect('shops:search_history')
+
+from django.shortcuts import render, redirect
+from django.contrib.auth import login
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib import messages
+
+
+def signup_view(request):
+    if request.user.is_authenticated:
+        return redirect('shops:search') # Redirect logged-in users away
+
+    if request.method == 'POST':
+        # UserCreationForm handles validation and password hashing automatically
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()  # Create the user
+            login(request, user)  # Log them in immediately
+            messages.success(request, "Account created successfully! You are now logged in.")
+            return redirect('shops:search') # Redirect to the main search page
+    else:
+        form = UserCreationForm()
+    
+    return render(request, 'accounts/signup.html', {'form': form})
+
+import os
+from django.conf import settings
+from django.http import FileResponse, Http404
+
+def favicon_view(request):
+    # CHANGE THE PATH to look inside the 'favicon_io' folder
+    favicon_path = os.path.join(settings.BASE_DIR, 'favicon_io', 'favicon.ico')
+    
+    if os.path.exists(favicon_path):
+        return FileResponse(open(favicon_path, 'rb'))
+    else:
+        raise Http404("Favicon not found")
+

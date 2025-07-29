@@ -1,11 +1,13 @@
 from django.urls import path
+from django.contrib.auth import views as auth_views 
 from . import views
 
 app_name = 'shops'
 
 urlpatterns = [
-    path('', views.search_view, name='search'),
-    path('search/', views.search_results_view, name='search_results'),
+    path('', views.index, name='index'),
+    path('search/', views.search_view, name='search'),
+    path('search_results/', views.search_results_view, name='search_results'),
     path('results/<int:search_id>/', views.results_view, name='results'),
     path('visualize/<int:search_id>/', views.visualize_view, name='visualize'),
     path('history/', views.search_history_view, name='history'),

@@ -1,19 +1,24 @@
-from django.db import models
+from django.contrib.auth.models import User
 from django.utils import timezone
+from django.db import models
+
 
 class SearchHistory(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     location = models.CharField(max_length=100)
     category = models.CharField(max_length=50)
     radius = models.IntegerField()
     results_count = models.IntegerField()
     created_at = models.DateTimeField(default=timezone.now)
-    
+    csv_filename = models.CharField(max_length=255, blank=True, null=True)
+
     class Meta:
         ordering = ['-created_at']
         verbose_name_plural = "Search Histories"
-    
+
     def __str__(self):
         return f"{self.category} in {self.location} - {self.results_count} results"
+
 
 class Shop(models.Model):
     search_history = models.ForeignKey(SearchHistory, on_delete=models.CASCADE, related_name='shops')
@@ -54,3 +59,5 @@ class Shop(models.Model):
         if self.rating:
             return '★' * int(self.rating) + '☆' * (5 - int(self.rating))
         return 'No rating'
+    
+

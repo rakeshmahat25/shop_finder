@@ -1,6 +1,7 @@
 # Created by https://www.toptal.com/developers/gitignore/api/python,django,venv,visualstudiocode,pycharm
 # Edit at https://www.toptal.com/developers/gitignore?templates=python,django,venv,visualstudiocode,pycharm
 
+task.txt
 ### Django ###
 *.log
 *.pot
@@ -9,6 +10,12 @@ __pycache__/
 local_settings.py
 db.sqlite3
 db.sqlite3-journal
+# Database
+*.sqlite3
+ ../venv/
+db.sqlite3
+*.sqlite
+*.db
 media
 
 # If your build process includes running collectstatic, then you probably don't need or want to include staticfiles/
