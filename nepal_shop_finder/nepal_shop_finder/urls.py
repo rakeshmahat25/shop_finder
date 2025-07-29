@@ -11,6 +11,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', redirect_to_search),
     path('shops/', include('shops.urls')), 
+    path('accounts/', include('allauth.urls')),
+
 ]
 
 if settings.DEBUG:
