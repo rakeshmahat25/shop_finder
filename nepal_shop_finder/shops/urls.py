@@ -18,3 +18,4 @@ urlpatterns = [
     path('signup/', views.signup_view, name='signup'),
     path('clear-search-history/', views.clear_search_history, name='clear_search_history'),
 ]
+
