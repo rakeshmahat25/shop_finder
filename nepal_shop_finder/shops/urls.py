@@ -13,7 +13,11 @@ urlpatterns = [
     path('history/', views.search_history_view, name='history'),
     path('delete_search/<int:search_id>/', views.delete_search_view, name='delete_search'),
     path('shop/<int:shop_id>/', views.shop_detail_view, name='shop_detail'),
+    path('login/', auth_views.LoginView.as_view(template_name='accounts/login.html'), name='login'),
+    path('logout/', auth_views.LogoutView.as_view(next_page='shops:search'), name='logout'),
+    path('signup/', views.signup_view, name='signup'),
     path('clear-search-history/', views.clear_search_history, name='clear_search_history'),
 
 
 ]
+
