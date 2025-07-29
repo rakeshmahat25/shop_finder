@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.http import JsonResponse
+from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.db.models import Q, Avg
 from django.contrib.auth.decorators import login_required
@@ -244,6 +245,14 @@ def shop_detail_view(request, shop_id):
     
     return render(request, 'shops/shop_detail.html', context)
 
+@login_required
+def clear_search_history(request):
+    if request.method == 'POST':
+        # Delete all search history for the current user
+        SearchHistory.objects.filter(user=request.user).delete()
+        return redirect('shops:search_history')  # adjust to your URL name
+    return redirect('shops:search_history')
+
 from django.shortcuts import render, redirect
 from django.contrib.auth import login
 from django.contrib.auth.forms import UserCreationForm
@@ -279,3 +288,4 @@ def favicon_view(request):
         return FileResponse(open(favicon_path, 'rb'))
     else:
         raise Http404("Favicon not found")
+
