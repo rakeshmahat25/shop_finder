@@ -1,17 +1,14 @@
 # Created by https://www.toptal.com/developers/gitignore/api/python,django,venv,visualstudiocode,pycharm
 # Edit at https://www.toptal.com/developers/gitignore?templates=python,django,venv,visualstudiocode,pycharm
 
+task.txt
 ### Django ###
 *.log
 *.pot
 *.pyc
 __pycache__/
 local_settings.py
-
-
-.env
-
-
+db.sqlite3
 db.sqlite3-journal
 # Database
 *.sqlite3

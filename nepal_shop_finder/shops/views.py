@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.http import JsonResponse
+from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.db.models import Q, Avg
 from django.contrib.auth.decorators import login_required
@@ -51,18 +52,22 @@ def search_results_view(request):
             try:
                 # Initialize scraper and search
                 scraper = MobileShopScraper()
+
                 shops_data = scraper.search_mobile_shops(
                     location=search_params['location'],
                     radius=search_params['radius'],
                     max_results=search_params['max_results']
                 )
+                filename = scraper._save_to_csv(shops_data, search_params['location'])
                 
                 # Save search history
                 search_history = SearchHistory.objects.create(
+                    user=request.user,
                     location=search_params['location'],
                     category=form.cleaned_data['category'],
                     radius=search_params['radius'],
-                    results_count=len(shops_data)
+                    results_count=len(shops_data),
+                    csv_filename=filename  # save the file name here
                 )
                 print('debug: Search history created:', search_history)
                 # Save shops data
@@ -240,6 +245,14 @@ def shop_detail_view(request, shop_id):
     
     return render(request, 'shops/shop_detail.html', context)
 
+@login_required
+def clear_search_history(request):
+    if request.method == 'POST':
+        # Delete all search history for the current user
+        SearchHistory.objects.filter(user=request.user).delete()
+        return redirect('shops:search_history')  # adjust to your URL name
+    return redirect('shops:search_history')
+
 from django.shortcuts import render, redirect
 from django.contrib.auth import login
 from django.contrib.auth.forms import UserCreationForm
@@ -275,3 +288,4 @@ def favicon_view(request):
         return FileResponse(open(favicon_path, 'rb'))
     else:
         raise Http404("Favicon not found")
+
