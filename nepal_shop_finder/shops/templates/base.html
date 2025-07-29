@@ -1,5 +1,6 @@
-{% load static %}
+
 <!DOCTYPE html>
+{% load static %}
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -26,15 +27,16 @@
     <style>
         /* --- Color Palette & Theme from your Tailwind Design --- */
         :root {
-            --primary-color: #51c088;  /* Tailwind blue-500 */
-            --primary-dark: #099837;  /* Tailwind blue-600 */
-            --primary-darker: #0a500b;/* Tailwind blue-700 */
-            --body-bg: #b9babb;       /* Tailwind gray-50 */
-            --footer-bg: #f3f4f6;     /* Tailwind gray-100 */
-            --text-dark: #1f2937;     /* Tailwind gray-800 */
-            --text-muted: #6b7280;    /* Tailwind gray-500 */
-            --text-light: #d1d5db;    /* Tailwind gray-300 */
+            --primary-color: #3d9b63;     /* Green Start */
+            --primary-dark: #1e4d3b;      /* Green End */
+            --primary-darker: #163c2f;    /* Deeper Shade */
+            --body-bg: #f9fafb;           /* Light Gray Background */
+            --footer-bg: #f3f4f6;         /* Footer Light Gray */
+            --text-dark: #1f2937;         /* Dark Gray Text */
+            --text-muted: #6b7280;        /* Muted Gray */
+            --text-light: #e5e7eb;        /* Light Text for Navbar */
         }
+
         
         body {
             background-color: var(--body-bg);
@@ -46,9 +48,10 @@
         
         /* --- Custom Header (inspired by Tailwind index.html) --- */
         .navbar-custom {
-            background-color: var(--primary-dark);
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
             box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
         }
+
 
         .navbar-custom .navbar-brand {
             color: white !important;
@@ -81,8 +84,9 @@
             border: none;
         }
         .navbar-custom .account-btn:hover {
-            background-color: #1e40af; /* blue-800 */
+            background-color: var(--primary-dark);
         }
+
         .navbar-custom .dropdown-menu {
             border-radius: 0.5rem;
             box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
@@ -203,7 +207,7 @@
 
             <div class="content-container">
                 {% block content %}
-                <!-- Child template content will be injected here -->
+                
                 {% endblock %}
             </div>
         </div>
