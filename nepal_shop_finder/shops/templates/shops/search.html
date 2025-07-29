@@ -16,7 +16,7 @@
                 <form action="{% url 'shops:search_results' %}" method="POST">
                     {% csrf_token %}
                     
-                        {{ form.as_p }}  <!-- This will render all fields -->
+                        {{ form.as_p }}
                         <button type="submit">Search</button>
                 </form>
             </div>

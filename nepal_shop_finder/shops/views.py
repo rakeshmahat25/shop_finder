@@ -51,18 +51,22 @@ def search_results_view(request):
             try:
                 # Initialize scraper and search
                 scraper = MobileShopScraper()
+
                 shops_data = scraper.search_mobile_shops(
                     location=search_params['location'],
                     radius=search_params['radius'],
                     max_results=search_params['max_results']
                 )
+                filename = scraper._save_to_csv(shops_data, search_params['location'])
                 
                 # Save search history
                 search_history = SearchHistory.objects.create(
+                    user=request.user,
                     location=search_params['location'],
                     category=form.cleaned_data['category'],
                     radius=search_params['radius'],
-                    results_count=len(shops_data)
+                    results_count=len(shops_data),
+                    csv_filename=filename  # save the file name here
                 )
                 print('debug: Search history created:', search_history)
                 # Save shops data

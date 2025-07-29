@@ -30,6 +30,12 @@ SOCIALACCOUNT_LOGIN_ON_GET = True
 
 DEBUG=os.getenv('DEBUG','False')=='True'
 
+import os
+
+SCRAPED_DATA_ROOT = os.path.join(BASE_DIR, 'shops', 'scraped_data')
+SCRAPED_DATA_URL = '/scraped_data/'
+
+
 # Application definition
 INSTALLED_APPS = [
     'django.contrib.admin',

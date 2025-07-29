@@ -21,10 +21,16 @@
         <a href="{% url 'shops:visualize' search_history.id %}" class="btn btn-secondary me-2">
             <i class="fas fa-chart-bar"></i> Visualize
         </a>
+        {% if search_history.csv_filename %}
+            <a href="{{ '/shops/scraped_data/'|add:search_history.csv_filename }}" class="btn btn-outline-success me-2">
+                <i class="fas fa-file-csv"></i> Download CSV
+            </a>
+        {% endif %}
         <a href="{% url 'shops:search' %}" class="btn btn-primary">
             <i class="fas fa-search"></i> New Search
         </a>
     </div>
+
 </div>
 
 <!-- Statistics Cards -->
